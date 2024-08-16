@@ -10,19 +10,18 @@ from typing import Any, Callable, Union
 def count_calls(method: Callable) -> Callable:
     """
     Decorator to count the number of times a method is called.
-
-    This decorator increments a counter in Redis each time the decorated method is called.
-    The counter is stored using the method's qualified name as the key.
     """
     @wraps(method)
     def wrapper(self, *args, **kwargs) -> Any:
         """
-        Wrapper function that increments the call counter before executing the method.
+        Wrapper function that increments the call
+        counter before executing the method.
         """
         if isinstance(self._redis, redis.Redis):
             self._redis.incr(method.__qualname__)
         return method(self, *args, **kwargs)
     return wrapper
+
 
 def call_history(method: Callable) -> Callable:
     """store the history of inputs and outputs for a function.
@@ -43,6 +42,7 @@ def call_history(method: Callable) -> Callable:
         return output
     return wrapper
 
+
 def replay(fn: Callable) -> None:
     """
     Display the history of calls of a particular function.
@@ -61,7 +61,9 @@ def replay(fn: Callable) -> None:
     fxn_inputs = redis_store.lrange(in_key, 0, -1)
     fxn_outputs = redis_store.lrange(out_key, 0, -1)
     for fxn_input, fxn_output in zip(fxn_inputs, fxn_outputs):
-        print(f'{fxn_name}({fxn_input.decode("utf-8")}) -> {fxn_output.decode("utf-8")}')
+        print(f'{fxn_name}({fxn_input.decode("utf-8")}) ->
+                {fxn_output.decode("utf-8")}')
+
 
 class Cache:
     """
@@ -84,7 +86,8 @@ class Cache:
         self._redis.set(data_key, data)
         return data_key
 
-    def get(self, key: str, fn: Callable = None) -> Union[str, bytes, int, float]:
+    def get(self, key: str, fn: Callable = None) -> Union[
+            str, bytes, int, float]:
         """
         Retrieve data from Redis storage.
         """
